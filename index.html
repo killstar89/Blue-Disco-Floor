@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Blue Grid - Top to Bottom Animation</title>
+  <title>Blue Grid - Outside to Inside Animation</title>
   <style>
     html, body {
       margin: 0;
@@ -26,7 +26,7 @@
     .colorBox {
       width: 100%;
       height: 100%;
-      background-color: #000080; /* default deep blue */
+      background-color: #001F3F;
       border: 1px solid black;
       animation: breathe 6s ease-in-out infinite;
       transition: background-color 3s;
@@ -52,7 +52,7 @@
   <div id="grid"></div>
 
   <script>
-    const colors = ['#0074D9', '#001F3F', '#0050A0', '#003366']; // blue palette
+    const colors = ['#0074D9', '#001F3F', '#0050A0', '#003366'];
 
     function getRandomBlue() {
       return colors[Math.floor(Math.random() * colors.length)];
@@ -69,12 +69,23 @@
       grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
       grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
+      const centerCol = cols / 2;
+      const centerRow = rows / 2;
+
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
           const box = document.createElement('div');
           box.className = 'colorBox';
           box.style.backgroundColor = getRandomBlue();
-          box.style.animationDelay = `${row * 1.2}s`;
+
+          // Calculate distance from center
+          const dx = col - centerCol;
+          const dy = row - centerRow;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          // Delay increases with distance from center
+          box.style.animationDelay = `${distance * 0.15}s`;
+
           grid.appendChild(box);
         }
       }
