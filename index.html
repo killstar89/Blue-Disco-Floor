@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Blue Grid - Outside to Inside Animation</title>
+  <title>Blue Grid - Spiral Animation</title>
   <style>
     html, body {
       margin: 0;
@@ -11,10 +11,6 @@
       height: 100%;
       overflow: hidden;
       background-color: #000;
-    }
-
-    * {
-      box-sizing: border-box;
     }
 
     #grid {
@@ -69,8 +65,31 @@
       grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
       grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
-      const centerCol = cols / 2;
-      const centerRow = rows / 2;
+      const matrix = [];
+      for (let r = 0; r < rows; r++) {
+        matrix[r] = new Array(cols).fill(null);
+      }
+
+      // Spiral order traversal to assign animation delays
+      let top = 0, bottom = rows - 1;
+      let left = 0, right = cols - 1;
+      let delay = 0;
+      const delayStep = 0.05;
+
+      while (top <= bottom && left <= right) {
+        for (let i = left; i <= right; i++) matrix[top][i] = delay++;
+        top++;
+        for (let i = top; i <= bottom; i++) matrix[i][right] = delay++;
+        right--;
+        if (top <= bottom) {
+          for (let i = right; i >= left; i--) matrix[bottom][i] = delay++;
+          bottom--;
+        }
+        if (left <= right) {
+          for (let i = bottom; i >= top; i--) matrix[i][left] = delay++;
+          left++;
+        }
+      }
 
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
@@ -78,13 +97,8 @@
           box.className = 'colorBox';
           box.style.backgroundColor = getRandomBlue();
 
-          // Calculate distance from center
-          const dx = col - centerCol;
-          const dy = row - centerRow;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          // Delay increases with distance from center
-          box.style.animationDelay = `${distance * 0.15}s`;
+          const spiralDelay = matrix[row][col] * delayStep;
+          box.style.animationDelay = `${spiralDelay}s`;
 
           grid.appendChild(box);
         }
